@@ -85,7 +85,8 @@
 	TailleCommande=\def\GEOCFtaillecmd{#1},%
 	TailleResultat=\def\GEOCFtailleres{#1},%
 	ElargirAuto=\def\GEOCFelargirauto{#1},%
-	MargeV=\def\GEOCFoffset{#1}
+	MargeV=\def\GEOCFoffset{#1},%
+	MargeH=\def\GEOCFoffseth{#1}
 }
 \setKVdefault[paramlgeogebra]{%
 	HauteurLigne=2,%
@@ -93,7 +94,8 @@
 	TailleResultat=\large,%
 	ElargirAuto=1,%
 	HauteurAuto=true,%
-	MargeV=6pt
+	MargeV=6pt,%
+	MargeH=0.2
 }
 
 \NewDocumentCommand\LigneCalculsGeogebra{ O{} m m }{%
@@ -126,12 +128,12 @@
 	%les commande/résultat
 	\ifboolKV[paramlgeogebra]{HauteurAuto}
 		{%
-			\draw ($(A2\GGBL) + (0.25,{-\the\offsetcfgeogebra-0.5*\GEOCFelargirauto*\the\hauteurboiteggbcmd})$) node[font=\GEOCFtaillecmd,right] {#2} ;
-			\draw ($(A3\GGBL) + (0.25,{\the\offsetcfgeogebra+0.5*\GEOCFelargirauto*\the\hauteurboiteggbres})$) node[font=\GEOCFtailleres,right] {#3} ;
+			\draw ($(A2\GGBL) + ({\GEOCFoffseth},{-\the\offsetcfgeogebra-0.5*\GEOCFelargirauto*\the\hauteurboiteggbcmd})$) node[font=\GEOCFtaillecmd,right] {#2} ;
+			\draw ($(A3\GGBL) + ({\GEOCFoffseth},{\the\offsetcfgeogebra+0.5*\GEOCFelargirauto*\the\hauteurboiteggbres})$) node[font=\GEOCFtailleres,right] {#3} ;
 		}
 		{%
-			\draw ($(A2\GGBL) + (0.25,{-0.25*\GEOCFhauteur})$) node[font=\GEOCFtaillecmd,right] {#2} ;
-			\draw ($(A2\GGBL) + (0.25,{-0.66*\GEOCFhauteur})$) node[font=\GEOCFtailleres,right] {#3} ;
+			\draw ($(A2\GGBL) + ({\GEOCFoffseth},{-0.25*\GEOCFhauteur})$) node[font=\GEOCFtaillecmd,right] {#2} ;
+			\draw ($(A2\GGBL) + ({\GEOCFoffseth},{-0.66*\GEOCFhauteur})$) node[font=\GEOCFtailleres,right] {#3} ;
 		}
 }
 
@@ -199,6 +201,7 @@
 	TailleResultat=\def\XCCFtailleres{#1},%
 	ElargirAuto=\def\XCCFelargirauto{#1},%
 	MargeV=\def\XCCFoffset{#1},%
+	MargeH=\def\XCCFoffseth{#1},%
 	CouleurCmd=\def\XCCFcoulcmd{#1},%
 	CouleurRes=\def\XCCFcoulres{#1},%
 	PosRes=\def\XCCFposres{#1}
@@ -209,6 +212,7 @@
 	TailleResultat=\large,%
 	ElargirAuto=1,%
 	MargeV=6pt,%
+	MargeH=0.15,%
 	CouleurCmd=red,%
 	CouleurRes=blue,%
 	PosRes=centre
@@ -223,6 +227,9 @@
 	\sbox{\maboitecmdxcas}{\pgfinterruptpicture \XCCFtaillecmd #2\endpgfinterruptpicture}\settoboxtotalheight{\hauteurboitecmdxcas}{\maboitecmdxcas}
 	\sbox{\maboiteresxcas}{\pgfinterruptpicture \XCCFtailleres #3\endpgfinterruptpicture}\settoboxtotalheight{\hauteurboiteresxcas}{\maboiteresxcas}
 	\def\XCCFhauteur{\XCCFelargirauto*(\the\hauteurboitecmdxcas+\the\hauteurboiteresxcas+4*\the\offsetcfxcas)}
+	%couleurs forcées
+	\ifboolKV[paramfenxcascf]{NoirBlanc}%si NB=true
+		{\def\XCCFcoulcmd{black}\def\XCCFcoulres{black}}{}
 	%compteur et raccourcis
 	\addtocounter{xcascfnum}{1}%
 	\def\XCL{\thexcascfnum}%
@@ -237,7 +244,7 @@
 	%les tracés
 	\draw[semithick,\XCCFcouleur] (A0\XCL) rectangle (A3\XCL) ;
 	%LA COMMANDE À GAUCHE
-	\draw ($(A0\XCL) + (0.15,{-\the\offsetcfxcas-0.5*\XCCFelargirauto*\the\hauteurboitecmdxcas})$) node[\XCCFcoulcmd,font=\XCCFtaillecmd,right] {#2} ;
+	\draw ($(A0\XCL) + ({\XCCFoffseth},{-\the\offsetcfxcas-0.5*\XCCFelargirauto*\the\hauteurboitecmdxcas})$) node[\XCCFcoulcmd,font=\XCCFtaillecmd,right] {#2} ;
 	%LE RÉSULTAT
 	\IfStrEq{\XCCFposres}{centre}%si posrep=center
 		{%
@@ -245,11 +252,11 @@
 		}{}
 	\IfStrEq{\XCCFposres}{gauche}%si posrep=left
 		{%
-			\draw ($(A1\XCL) + ({0.15},{\the\offsetcfxcas+0.5*\XCCFelargirauto*\the\hauteurboiteresxcas})$) node[\XCCFcoulres,font=\XCCFtailleres,right] {#3} ;
+			\draw ($(A1\XCL) + ({{\XCCFoffseth}},{\the\offsetcfxcas+0.5*\XCCFelargirauto*\the\hauteurboiteresxcas})$) node[\XCCFcoulres,font=\XCCFtailleres,right] {#3} ;
 		}{}
 	\IfStrEq{\XCCFposres}{droite}%si posrep=right
 		{%
-			\draw ($(A1\XCL) + ({\XCCFlarg-0.15},{\the\offsetcfxcas+0.5*\XCCFelargirauto*\the\hauteurboiteresxcas})$) node[\XCCFcoulres,font=\XCCFtailleres,left] {#3} ;
+			\draw ($(A1\XCL) + ({\XCCFlarg-{\XCCFoffseth}},{\the\offsetcfxcas+0.5*\XCCFelargirauto*\the\hauteurboiteresxcas})$) node[\XCCFcoulres,font=\XCCFtailleres,left] {#3} ;
 		}{}
 	%LA LIGNE DE SÉPARATION
 	\ifboolKV[paramfenxcascf]{Sep}%si sep=true
