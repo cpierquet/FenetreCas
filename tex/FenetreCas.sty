@@ -3,7 +3,8 @@
 % or later, see http://www.latex-project.org/lppl.txtf
 
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{FenetreCas}[2023/03/17 0.1.0 Simuer une fenetre CAS type Geogebra ou Xcas]
+\ProvidesPackage{FenetreCas}[2023/05/07 0.1.1 Simuler une fenetre CAS type Geogebra ou Xcas]
+% 0.1.1	Clés [FondCouleur] pour le fond des cases
 % 0.1.0	Version initiale
 
 %------Option(s)
@@ -86,7 +87,8 @@
 	TailleResultat=\def\GEOCFtailleres{#1},%
 	ElargirAuto=\def\GEOCFelargirauto{#1},%
 	MargeV=\def\GEOCFoffset{#1},%
-	MargeH=\def\GEOCFoffseth{#1}
+	MargeH=\def\GEOCFoffseth{#1},%
+	CouleurFond=\def\GEOCFcolfond{#1}
 }
 \setKVdefault[paramlgeogebra]{%
 	HauteurLigne=2,%
@@ -95,7 +97,9 @@
 	ElargirAuto=1,%
 	HauteurAuto=true,%
 	MargeV=6pt,%
-	MargeH=0.2
+	MargeH=0.2,%
+	Fond=false,%
+	CouleurFond=white
 }
 
 \NewDocumentCommand\LigneCalculsGeogebra{ O{} m m }{%
@@ -124,7 +128,10 @@
 	\coordinate (A3\GGBL) at ($(A1\GGBL) + ({\GEOCFlargnum},0)$);
 	%les tracés
 	\draw[semithick,fill=\GEOCFcoulnum] (A0\GGBL) rectangle (A3\GGBL) node[midway,font=\GEOCFpolnum] {\GGBL} ;
-	\draw[semithick] (A2\GGBL) rectangle++({\GEOCFlarg-\GEOCFlargnum},{-\GEOCFhauteur}) ;
+	\ifboolKV[paramlgeogebra]{Fond}
+		{\draw[semithick,fill=\GEOCFcolfond] (A2\GGBL) rectangle++({\GEOCFlarg-\GEOCFlargnum},{-\GEOCFhauteur}) ;}
+		{\draw[semithick] (A2\GGBL) rectangle++({\GEOCFlarg-\GEOCFlargnum},{-\GEOCFhauteur}) ;}
+	
 	%les commande/résultat
 	\ifboolKV[paramlgeogebra]{HauteurAuto}
 		{%
@@ -204,7 +211,8 @@
 	MargeH=\def\XCCFoffseth{#1},%
 	CouleurCmd=\def\XCCFcoulcmd{#1},%
 	CouleurRes=\def\XCCFcoulres{#1},%
-	PosRes=\def\XCCFposres{#1}
+	PosRes=\def\XCCFposres{#1},%
+	CouleurFond=\def\XCCFcolfond{#1}
 }
 
 \setKVdefault[paramlgxcas]{%
@@ -215,7 +223,9 @@
 	MargeH=0.15,%
 	CouleurCmd=red,%
 	CouleurRes=blue,%
-	PosRes=centre
+	PosRes=centre,%
+	Fond=false,%
+	CouleurFond=white
 }
 
 \NewDocumentCommand\LigneCalculsXcas{ O{} m m }{%
@@ -242,7 +252,15 @@
 	\coordinate (A2\XCL) at ($(A0\XCL) + ({\XCCFlarg},0)$);
 	\coordinate (A3\XCL) at ($(A1\XCL) + ({\XCCFlarg},0)$);
 	%les tracés
-	\draw[semithick,\XCCFcouleur] (A0\XCL) rectangle (A3\XCL) ;
+	\ifboolKV[paramlgxcas]{Fond}%si on met une couleur de fond
+		{%
+			\IfSubStr{\XCCFcolfond}{/}%
+				{\StrCut{\XCCFcolfond}{/}{\XCCFcolfondC}{\XCCFcolfondR}}%
+				{\def\XCCFcolfondC{\XCCFcolfond}\def\XCCFcolfondR{\XCCFcolfond}}%
+			\draw[semithick,\XCCFcouleur,fill=\XCCFcolfondC] (A0\XCL) rectangle++ ($(0,{-2*\the\offsetcfxcas-\XCCFelargirauto*\the\hauteurboitecmdxcas})+({\XCCFlarg},0)$) ;%
+			\draw[semithick,\XCCFcouleur,fill=\XCCFcolfondR] ($(A0\XCL)+(0,{-2*\the\offsetcfxcas-\XCCFelargirauto*\the\hauteurboitecmdxcas})$) rectangle (A3\XCL) ;%
+		}
+		{\draw[semithick,\XCCFcouleur] (A0\XCL) rectangle (A3\XCL) ;}
 	%LA COMMANDE À GAUCHE
 	\draw ($(A0\XCL) + ({\XCCFoffseth},{-\the\offsetcfxcas-0.5*\XCCFelargirauto*\the\hauteurboitecmdxcas})$) node[\XCCFcoulcmd,font=\XCCFtaillecmd,right] {#2} ;
 	%LE RÉSULTAT
