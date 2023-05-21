@@ -3,7 +3,8 @@
 % or later, see http://www.latex-project.org/lppl.txtf
 
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{FenetreCas}[2023/05/07 0.1.1 Simuler une fenetre CAS type Geogebra ou Xcas]
+\ProvidesPackage{FenetreCas}[2023/05/21 0.1.2 Simuler une fenetre CAS type Geogebra ou Xcas]
+% 0.1.2	Clés [Select] pour les numéros avec des ronds
 % 0.1.1	Clés [FondCouleur] pour le fond des cases
 % 0.1.0	Version initiale
 
@@ -42,7 +43,7 @@
 	LargeurNumero=1,%
 	CouleurNumero=cyan!5,%
 	PoliceEntete=\bfseries\large\sffamily,%
-	PoliceNumero=\Large\sffamily,%
+	PoliceNumero=\large\sffamily,%
 	Titre={$\triangleright$ Calcul formel},%
 	Entete=true
 }
@@ -88,7 +89,8 @@
 	ElargirAuto=\def\GEOCFelargirauto{#1},%
 	MargeV=\def\GEOCFoffset{#1},%
 	MargeH=\def\GEOCFoffseth{#1},%
-	CouleurFond=\def\GEOCFcolfond{#1}
+	CouleurFond=\def\GEOCFcolfond{#1},%
+	CouleurSelect=\def\GEOCFcolselect{#1}
 }
 \setKVdefault[paramlgeogebra]{%
 	HauteurLigne=2,%
@@ -99,7 +101,9 @@
 	MargeV=6pt,%
 	MargeH=0.2,%
 	Fond=false,%
-	CouleurFond=white
+	CouleurFond=white,%
+	Select=true,%
+	CouleurSelect=white
 }
 
 \NewDocumentCommand\LigneCalculsGeogebra{ O{} m m }{%
@@ -126,8 +130,20 @@
 	\coordinate (A1\GGBL) at ($(A0\GGBL) + (0,{-\GEOCFhauteur})$);
 	\coordinate (A2\GGBL) at ($(A0\GGBL) + ({\GEOCFlargnum},0)$);
 	\coordinate (A3\GGBL) at ($(A1\GGBL) + ({\GEOCFlargnum},0)$);
+	\coordinate (AH\GGBL) at ($(A0\GGBL) + ({0.5*\GEOCFlargnum},{-0.33*\GEOCFhauteur})$);
+	\coordinate (AM\GGBL) at ($(A0\GGBL) + ({0.5*\GEOCFlargnum},{-0.5*\GEOCFhauteur})$);
+	\coordinate (AB\GGBL) at ($(A0\GGBL) + ({0.5*\GEOCFlargnum},{-0.66*\GEOCFhauteur})$);
 	%les tracés
-	\draw[semithick,fill=\GEOCFcoulnum] (A0\GGBL) rectangle (A3\GGBL) node[midway,font=\GEOCFpolnum] {\GGBL} ;
+	\ifboolKV[paramlgeogebra]{Select}%si on choisit les petits ronds par défaut ^^
+		{%
+			\draw[semithick,fill=\GEOCFcoulnum] (A0\GGBL) rectangle (A3\GGBL) ; %
+			\draw[semithick,draw=black,fill=\GEOCFcolselect] ($(AM\GGBL) + (0,-0.375)$) circle[radius=4pt] ;%
+			\draw[black] ($(AM\GGBL) + (0,0.375)$) node[font=\GEOCFpolnum] {\GGBL} ;%
+			
+		}%
+		{%
+			\draw[semithick,fill=\GEOCFcoulnum] (A0\GGBL) rectangle (A3\GGBL) node[midway,font=\GEOCFpolnum] {\GGBL} ;%
+		}%
 	\ifboolKV[paramlgeogebra]{Fond}
 		{\draw[semithick,fill=\GEOCFcolfond] (A2\GGBL) rectangle++({\GEOCFlarg-\GEOCFlargnum},{-\GEOCFhauteur}) ;}
 		{\draw[semithick] (A2\GGBL) rectangle++({\GEOCFlarg-\GEOCFlargnum},{-\GEOCFhauteur}) ;}
