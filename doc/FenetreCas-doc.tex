@@ -3,8 +3,8 @@
 % arara: pdflatex: {shell: yes, synctex: no, interaction: batchmode} if found('log', '(undefined references|Please rerun|Rerun to get)')
 
 \documentclass[french,a4paper,11pt]{article}
-\def\TPversion{0.1.1}
-\def\TPdate{7 mai 2023}
+\def\TPversion{0.1.2}
+\def\TPdate{21 mai 2023}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage{amsmath,amssymb}
@@ -265,6 +265,8 @@ Le fonctionnement global est :
 
 \section{Historique}
 
+\verb|v0.1.2|~:~~~~Clés [Select] pour le \textit{rond} de sélection sur Geogebra
+
 \verb|v0.1.1|~:~~~~Clés [Fond] et [FondCouleur] pour le fond des lignes
 
 \verb|v0.1.0|~:~~~~Version initiale.
@@ -308,7 +310,7 @@ Le premier argument, optionnel et entre \texttt{[...]} propose les \Cle{clés} s
 	\item \Cle{PoliceEntete} qui paramètre la police du texte de l'entête  ;
 	
 	\hfill~défaut : \Cle{\textbackslash bfseries\textbackslash large\textbackslash sffamily}
-	\item \Cle{PoliceNumero} qui paramètre la police du numéro  ; \hfill~défaut : \Cle{\textbackslash Large\textbackslash sffamily}
+	\item \Cle{PoliceNumero} qui paramètre la police du numéro  ; \hfill~défaut : \Cle{\textbackslash large\textbackslash sffamily}
 	\item \Cle{Titre} qui permet de personnaliser le label de l'entête ;
 	
 	\hfill~défaut : \Cle{\$\textbackslash triangleright\$ Calcul formel}
@@ -365,8 +367,12 @@ Le premier argument, optionnel et entre \texttt{[...]} propose les \Cle{clés} s
 	\hfill~défaut : \Cle{true}
 	\item \Cle{TailleCommande} pour la taille de la commande ; \hfill~défaut : \Cle{\textbackslash normalsize}
 	\item \Cle{TailleResultat} pour la taille du résultat ; \hfill~défaut : \Cle{\textbackslash large}
-	\item le booléen \Cle{Fond} activer la coloration de fond de la ligne ; \hfill~défaut : \Cle{false}
+	\item le booléen \Cle{Fond} pour activer la coloration de fond de la ligne ; \hfill~défaut : \Cle{false}
 	\item \Cle{CouleurFond} pour spécifier une couleur de fond si \Cle{Fond=true} ; \hfill~défaut : \Cle{white}
+	\item le booléen \Cle{Select} pour (dés)activer le \textit{rond} de sélection ; \hfill~défaut : \Cle{true}
+	\item \Cle{CouleurSelect} pour spécifier une couleur de fond du \textit{rond} si \Cle{Select=true} ;
+	
+	\hfill~défaut : \Cle{white}
 	\item \Cle{MargeH} pour spécifier l'espacement horizontal entre les calculs et les bords verticaux ;
 	
 	\hfill~défaut : \Cle{0.2}
@@ -392,13 +398,13 @@ Les arguments obligatoires, et entre \texttt{\{...\}}, correspondent à la comma
 	\LigneCalculsGeogebra%
 		{\sffamily g(x)=4/(1+e\textasciicircum(-k x))}
 		{$\rightarrow$ \: $\mathsf{g(x)=\dfrac{4}{e^{-kx}+1}}$}
-	\LigneCalculsGeogebra
+	\LigneCalculsGeogebra[Select=false]
 		{f(x)=1+sqrt(x+3)}
 		{$\rightarrow$ \: $f(x)=1+\sqrt{x+3}$}
 	\LigneCalculsGeogebra
 		{\texttt{Dériver[exp(0.1*x)]}}
 		{$\rightarrow$ \: \texttt{x $\mapsto$ 0.1*exp(0.1*x)}}
-	\LigneCalculsGeogebra[TailleCommande=\LARGE,TailleResultat=\huge]
+	\LigneCalculsGeogebra[TailleCommande=\LARGE,TailleResultat=\huge,CouleurSelect=violet]
 		{(1/4+1/3)/(1/5+2/7)}
 		{$\rightarrow$ \: $\dfrac{\dfrac14+\dfrac13}{\dfrac15+\dfrac27}=
 			\fpeval{(1/4+1/3)/(1/5+2/7)}$}
