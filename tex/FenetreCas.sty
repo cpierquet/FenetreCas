@@ -3,10 +3,11 @@
 % or later, see http://www.latex-project.org/lppl.txtf
 
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{FenetreCas}[2023/05/21 0.1.2 Simuler une fenetre CAS type Geogebra ou Xcas]
-% 0.1.2	Clés [Select] pour les numéros avec des ronds
-% 0.1.1	Clés [FondCouleur] pour le fond des cases
-% 0.1.0	Version initiale
+\ProvidesPackage{FenetreCas}[2023/06/14 0.1.3 Simuler une fenetre CAS type Geogebra ou Xcas]
+% 0.1.3	Clé [PosRes] pour positionner la réponse (gauche/centre/droite) + Correction de bugs mineurs.
+% 0.1.2	Clés [Select] pour les numéros avec des ronds.
+% 0.1.1	Clés [FondCouleur] pour le fond des cases.
+% 0.1.0	Version initiale.
 
 %------Option(s)
 
@@ -90,7 +91,8 @@
 	MargeV=\def\GEOCFoffset{#1},%
 	MargeH=\def\GEOCFoffseth{#1},%
 	CouleurFond=\def\GEOCFcolfond{#1},%
-	CouleurSelect=\def\GEOCFcolselect{#1}
+	CouleurSelect=\def\GEOCFcolselect{#1},%
+	PosRes=\def\GEOCFposrep{#1}
 }
 \setKVdefault[paramlgeogebra]{%
 	HauteurLigne=2,%
@@ -103,7 +105,8 @@
 	Fond=false,%
 	CouleurFond=white,%
 	Select=true,%
-	CouleurSelect=white
+	CouleurSelect=white,%
+	PosRes=gauche
 }
 
 \NewDocumentCommand\LigneCalculsGeogebra{ O{} m m }{%
@@ -147,16 +150,43 @@
 	\ifboolKV[paramlgeogebra]{Fond}
 		{\draw[semithick,fill=\GEOCFcolfond] (A2\GGBL) rectangle++({\GEOCFlarg-\GEOCFlargnum},{-\GEOCFhauteur}) ;}
 		{\draw[semithick] (A2\GGBL) rectangle++({\GEOCFlarg-\GEOCFlargnum},{-\GEOCFhauteur}) ;}
-	
 	%les commande/résultat
 	\ifboolKV[paramlgeogebra]{HauteurAuto}
 		{%
+			%commande
 			\draw ($(A2\GGBL) + ({\GEOCFoffseth},{-\the\offsetcfgeogebra-0.5*\GEOCFelargirauto*\the\hauteurboiteggbcmd})$) node[font=\GEOCFtaillecmd,right] {#2} ;
-			\draw ($(A3\GGBL) + ({\GEOCFoffseth},{\the\offsetcfgeogebra+0.5*\GEOCFelargirauto*\the\hauteurboiteggbres})$) node[font=\GEOCFtailleres,right] {#3} ;
-		}
+			%résultat
+			\IfStrEq{\GEOCFposrep}{gauche}
+				{%
+					\draw ($(A3\GGBL) + ({\GEOCFoffseth},{\the\offsetcfgeogebra+0.5*\GEOCFelargirauto*\the\hauteurboiteggbres})$) node[font=\GEOCFtailleres,right] {#3} ;
+				}{}%
+			\IfStrEq{\GEOCFposrep}{droite}
+				{%
+					\draw ($(A3\GGBL) + ({\GEOCFlarg-\GEOCFlargnum},0) + ({-\GEOCFoffseth},{\the\offsetcfgeogebra+0.5*\GEOCFelargirauto*\the\hauteurboiteggbres})$) node[font=\GEOCFtailleres,left] {#3} ;
+					%\draw ($(A3\GGBL) + ({\GEOCFlarg-\GEOCFlargnum},0) + ({-\GEOCFoffseth},{\the\offsetcfgeogebra+0.5*\GEOCFelargirauto*\the\hauteurboiteggbres})$) node[font=\GEOCFtailleres,left] {#3} ;
+				}{}%
+			\IfStrEq{\GEOCFposrep}{centre}
+				{%
+					\draw ($(A3\GGBL) + ({0.5*(\GEOCFlarg-\GEOCFlargnum)},{\the\offsetcfgeogebra+0.5*\GEOCFelargirauto*\the\hauteurboiteggbres})$) node[font=\GEOCFtailleres] {#3} ;
+				}{}%
+		}%
 		{%
+			%commande
 			\draw ($(A2\GGBL) + ({\GEOCFoffseth},{-0.25*\GEOCFhauteur})$) node[font=\GEOCFtaillecmd,right] {#2} ;
-			\draw ($(A2\GGBL) + ({\GEOCFoffseth},{-0.66*\GEOCFhauteur})$) node[font=\GEOCFtailleres,right] {#3} ;
+			%résultat
+			\IfStrEq{\GEOCFposrep}{gauche}
+				{%
+					\draw ($(A2\GGBL) + ({\GEOCFoffseth},{-0.66*\GEOCFhauteur})$) node[font=\GEOCFtailleres,right] {#3} ;
+				}{}%
+			\IfStrEq{\GEOCFposrep}{droite}
+				{%
+					\draw ($(A2\GGBL) + ({\GEOCFlarg-\GEOCFlargnum},0) + ({-\GEOCFoffseth},{-0.66*\GEOCFhauteur})$) node[font=\GEOCFtailleres,left] {#3} ;
+				}{}%
+			\IfStrEq{\GEOCFposrep}{centre}
+				{%
+					\draw ($(A2\GGBL) + ({0.5*(\GEOCFlarg-\GEOCFlargnum)},0) + (0,{-0.66*\GEOCFhauteur})$) node[font=\GEOCFtailleres] {#3} ;
+				}%
+				{}%
 		}
 }
 
@@ -290,7 +320,13 @@
 		}{}
 	\IfStrEq{\XCCFposres}{droite}%si posrep=right
 		{%
-			\draw ($(A1\XCL) + ({\XCCFlarg-{\XCCFoffseth}},{\the\offsetcfxcas+0.5*\XCCFelargirauto*\the\hauteurboiteresxcas})$) node[\XCCFcoulres,font=\XCCFtailleres,left] {#3} ;
+			\ifboolKV[paramfenxcascf]{Menu}%si menu=true
+				{%
+					\draw ($(A1\XCL) + ({\XCCFlarg-1},0) + ({-\XCCFoffseth},{\the\offsetcfxcas+0.5*\XCCFelargirauto*\the\hauteurboiteresxcas})$) node[\XCCFcoulres,font=\XCCFtailleres,left] {#3} ;
+				}%
+				{%
+					\draw ($(A1\XCL) + ({\XCCFlarg},0) + ({-\XCCFoffseth},{\the\offsetcfxcas+0.5*\XCCFelargirauto*\the\hauteurboiteresxcas})$) node[\XCCFcoulres,font=\XCCFtailleres,left] {#3} ;
+				}%
 		}{}
 	%LA LIGNE DE SÉPARATION
 	\ifboolKV[paramfenxcascf]{Sep}%si sep=true
